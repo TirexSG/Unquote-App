@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Unquote</string>
+    <string name="btn_sound">Sound</string>
 </resources>

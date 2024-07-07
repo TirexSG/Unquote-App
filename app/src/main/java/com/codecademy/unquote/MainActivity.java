@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import java.util.Random;
 import android.view.MenuItem;
@@ -25,8 +27,10 @@ public class MainActivity extends AppCompatActivity {
     int totalCorrect;
     int totalQuestions;
     ArrayList<Question> questions;
-
-
+    MediaPlayer mpButton;
+    MediaPlayer mpCorrect;
+    MediaPlayer mpIncorrect;
+    MediaPlayer mpCelebration;
     ImageView questionImageView;
     TextView questionTextView;
     TextView questionsRemainingTextView;
@@ -53,30 +57,38 @@ public class MainActivity extends AppCompatActivity {
         answer2Button = findViewById(R.id.btn_main_answer_2);
         answer3Button = findViewById(R.id.btn_main_answer_3);
         submitButton = findViewById(R.id.btn_main_submit_answer);
+        mpButton = MediaPlayer.create(this, R.raw.button_sound);
+        mpCorrect = MediaPlayer.create(this, R.raw.correct_question);
+        mpIncorrect = MediaPlayer.create(this, R.raw.incorrect_question);
+        mpCelebration = MediaPlayer.create(this, R.raw.celebration_sound);
 
 
         answer0Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onAnswerSelected(0);
+                mpButton.start();
             }
         });
         answer1Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onAnswerSelected(1);
+                mpButton.start();
             }
         });
         answer2Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onAnswerSelected(2);
+                mpButton.start();
             }
         });
         answer3Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onAnswerSelected(3);
+                mpButton.start();
             }
         });
 
@@ -84,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onAnswerSubmission();
+                mpButton.start();
             }
         });
 
@@ -144,8 +157,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentQuestion.isCorrect()) {
             statusQuestion.setMessage("You got it right!");
+            mpCorrect.start();
             totalCorrect ++;
         } else {
+            mpIncorrect.start();
             statusQuestion.setMessage("Wrong!");
         }
         statusQuestion.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -164,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     gameOverDialogBuilder.setCancelable(false);
                     gameOverDialogBuilder.setTitle("Game over!");
                     gameOverDialogBuilder.setMessage(gameOverMessage);
+                    mpCelebration.start();
 
                     gameOverDialogBuilder.setPositiveButton("Play Again!", new DialogInterface.OnClickListener() {
                         @Override
@@ -171,8 +187,13 @@ public class MainActivity extends AppCompatActivity {
                             startNewGame();
                         }
                     });
+                    gameOverDialogBuilder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            System.exit(0);
+                        }
+                    });
                     gameOverDialogBuilder.create().show();
-
                 } else {
                     chooseNewQuestion();
 
@@ -181,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
 
 
         AlertDialog statusDialog = statusQuestion.create();
@@ -266,4 +288,6 @@ public class MainActivity extends AppCompatActivity {
             return "You got " + totalCorrect + " right out of " + totalQuestions + ". Better luck next time!";
         }
     }
+
+
 }
